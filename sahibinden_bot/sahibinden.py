@@ -4,43 +4,38 @@ import sys
 import httpx
 from bs4 import BeautifulSoup
 from core import Product
+from fake_headers import Headers
 from settings import settings
 
 
 class SahibindenClient:
     BASE_URL = "https://www.sahibinden.com"
 
-    def __init__(self, cookie: str):
-        self.cookie = cookie
+    def __init__(self, timeout: int):
+        self.timeout = timeout
+        self.fake_headers = Headers(headers=True)  # do generate misc headers
 
-    def _get_headers(self) -> dict:
-        return {
-            "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",  # noqa
-            "cookie": self.cookie,
-            "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.4951.64 Safari/537.36",  # noqa
-            "accept-language": "en-GB,en-US;q=0.9,en;q=0.8",
-            "sec-ch-ua": '" Not A;Brand";v="99", "Chromium";v="101", "Google Chrome";v="101"',
-            "sec-ch-ua-mobile": "?0",
-            "sec-ch-ua-platform": '"macOS"',
-            "sec-fetch-dest": "document",
-            "sec-fetch-mode": "navigate",
-            "sec-fetch-site": "none",
-            "sec-fetch-user": "?1",
-            "upgrade-insecure-requests": "1",
-        }
+    async def _make_request(self, url: str) -> httpx.Response:
+        for proxies in settings.httpx_proxies:
+            try:
+                async with httpx.AsyncClient(timeout=self.timeout, proxies=proxies, verify=False) as client:
+                    response = await client.get(url, headers=self.fake_headers.generate())
+                    if response.status_code == 200:
+                        return response
+                    else:
+                        logging.error(f"Sahibinden unexpected status: {response.status_code}")
+                        continue
+            except Exception as exc:
+                logging.error(f"Sahibinden request error: {exc}", exc_info=True)
+                continue
 
-    async def get_soup(self, url: str) -> BeautifulSoup:
-        async with httpx.AsyncClient(timeout=10) as client:
-            response = await client.get(url, headers=self._get_headers())
-            if response.status_code == 200:
-                return BeautifulSoup(response.content, "html.parser")
-            else:
-                logging.error(f"Sahibinden unexpected status: {response.status_code}")
-                sys.exit(-1)
+        logging.error("Sahibinden request error: No proxies available")
+        sys.exit(-1)
 
     async def get_products(self, list_url: str) -> list[Product]:
-        list_response = await self.get_soup(list_url)
-        results_items = list_response.findAll("tr", {"class": "searchResultsItem"})
+        response = await self._make_request(list_url)
+        soup = BeautifulSoup(response.content, "html.parser")
+        results_items = soup.findAll("tr", {"class": "searchResultsItem"})
 
         product_list = []
         for result_item in results_items:
@@ -77,4 +72,4 @@ class SahibindenClient:
         return product_list
 
 
-sahibinden_client = SahibindenClient(settings.SAHIBINDEN_COOKIE)
+sahibinden_client = SahibindenClient(settings.SAHIBINDEN_TIMEOUT)
