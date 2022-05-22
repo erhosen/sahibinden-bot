@@ -34,6 +34,7 @@ async def _handler(event: Optional[Dict], context: Optional[Dict]):
         async for product in adapter.determine_new_products(products):
             await send_message(bot, product)
             published_product_ids.append(product.id)
+            await asyncio.sleep(1)
         if published_product_ids:
             logging.info(f"Published sahibinden products: {published_product_ids}")
             await adapter.set_products_published(published_product_ids)

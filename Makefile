@@ -12,7 +12,7 @@ format: clean
 	@pre-commit run --all-files
 
 deploy: clean generate_requirements
-	@yc serverless function version create --folder-id=b1galdj3l4r95kd20qe0 --function-name=sahibindobot --runtime python39 --entrypoint main.handler --memory 128m --execution-timeout 15s --source-path ./sahibinden_bot
+	@yc serverless function version create --folder-id=b1galdj3l4r95kd20qe0 --function-name=sahibindobot --runtime python39 --entrypoint main.handler --memory 128m --execution-timeout 25s --source-path ./sahibinden_bot
 
 run:
 	@yc serverless function invoke --folder-id=b1galdj3l4r95kd20qe0 --name=sahibindobot

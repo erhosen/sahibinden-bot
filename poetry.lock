@@ -184,14 +184,6 @@ bs4 = "*"
 html5lib = "*"
 
 [[package]]
-name = "fake-useragent"
-version = "0.1.11"
-description = "Up to date simple useragent faker with real world database"
-category = "main"
-optional = false
-python-versions = "*"
-
-[[package]]
 name = "filelock"
 version = "3.7.0"
 description = "A platform independent file lock."
@@ -574,7 +566,7 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.10"
-content-hash = "52301c469351ea163e8df28dc4719bebb4df7df243a23c4ed640d3f44a21da09"
+content-hash = "4f7568a589c4520c0a0c0277300c12dea3b55746db1e23be220dc78584ae56ac"
 
 [metadata.files]
 aiobotocore = [
@@ -704,9 +696,6 @@ distlib = [
 fake-headers = [
     {file = "fake-headers-1.0.2.tar.gz", hash = "sha256:f22b1f37a97630ad7d8fdcfd1a0b71349aa94d2c000849300645b2e725bc5876"},
     {file = "fake_headers-1.0.2-py3-none-any.whl", hash = "sha256:d5b0e05c2e52573f3d574ec06b7cf96bb330d8d80aa99fb41f62d6df24e8cf3d"},
-]
-fake-useragent = [
-    {file = "fake-useragent-0.1.11.tar.gz", hash = "sha256:c104998b750eb097eefc28ae28e92d66397598d2cf41a31aa45d5559ef1adf35"},
 ]
 filelock = [
     {file = "filelock-3.7.0-py3-none-any.whl", hash = "sha256:c7b5fdb219b398a5b28c8e4c1893ef5f98ece6a38c6ab2c22e26ec161556fed6"},

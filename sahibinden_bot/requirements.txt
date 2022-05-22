@@ -1,4 +1,3 @@
-Warning: The lock file is not up to date with the latest changes in pyproject.toml. You may be getting outdated dependencies. Run update to update them.
 aiobotocore==2.3.2; python_version >= "3.6"
 aiohttp==3.8.1; python_version >= "3.6"
 aioitertools==0.10.0; python_version >= "3.6"
