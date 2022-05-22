@@ -1,10 +1,16 @@
 import json
 from contextlib import AsyncExitStack
-from typing import AsyncIterable, List
+from typing import AsyncIterable, List, TypeVar
 
 from aiobotocore import session
-from core import Product, SahibindenMeta
+from pydantic import BaseModel
 from settings import settings
+
+T = TypeVar("T")
+
+
+class ObjectStorageMeta(BaseModel):
+    published_ids: List[int]
 
 
 class ObjectStorageAdapter:
@@ -14,17 +20,17 @@ class ObjectStorageAdapter:
         self._exit_stack = AsyncExitStack()
         self._s3_client = None
 
-        self.sahibinden_meta = None
+        self._meta = None
 
-    async def _get_meta_from_s3(self) -> SahibindenMeta:
+    async def _get_meta_from_s3(self) -> ObjectStorageMeta:
         response = await self._s3_client.get_object(Bucket=self._bucket, Key=self._filename)
         async with response["Body"] as stream:
             raw_data = json.loads(await stream.read())
-            return SahibindenMeta(**raw_data)
+            return ObjectStorageMeta(**raw_data)
 
     async def _upload_meta_to_s3(self):
-        self.sahibinden_meta.published_ids = self.sahibinden_meta.published_ids[-50:]
-        json_str = self.sahibinden_meta.json() + "\n"
+        self._meta.published_ids = self._meta.published_ids[-50:]
+        json_str = self._meta.json() + "\n"
         await self._s3_client.put_object(
             Bucket=self._bucket,
             Key=self._filename,
@@ -42,18 +48,18 @@ class ObjectStorageAdapter:
                 aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
             )
         )
-        self.sahibinden_meta = await self._get_meta_from_s3()
+        self._meta = await self._get_meta_from_s3()
         return self
 
     async def __aexit__(self, exc_type, exc_val, exc_tb):
         await self._exit_stack.__aexit__(exc_type, exc_val, exc_tb)
 
-    async def determine_new_products(self, products: List[Product]) -> AsyncIterable[Product]:
-        published_ids_set = set(self.sahibinden_meta.published_ids)
-        for product in products:
-            if product.id not in published_ids_set:
-                yield product
+    async def determine_new_items(self, items: List[T]) -> AsyncIterable[T]:
+        published_ids_set = set(self._meta.published_ids)
+        for item in items:
+            if item.id not in published_ids_set:  # type: ignore
+                yield item
 
-    async def set_products_published(self, published_product_ids: List[int]):
-        self.sahibinden_meta.published_ids += published_product_ids
+    async def set_published_items(self, published_items: List[T]):
+        self._meta.published_ids += [item.id for item in published_items]  # type: ignore
         await self._upload_meta_to_s3()

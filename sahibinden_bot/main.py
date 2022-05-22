@@ -3,11 +3,11 @@ import logging
 from typing import Dict, Optional
 
 import sentry_sdk
+from aiogram import Bot
 from core import Product
 from object_storage_adapter import ObjectStorageAdapter
 from sahibinden import sahibinden_client
 from settings import settings
-from telebot.async_telebot import AsyncTeleBot
 
 logging.basicConfig(level=logging.INFO)
 sentry_sdk.init(settings.SENTRY_DSN, traces_sample_rate=1.0)
@@ -15,7 +15,7 @@ sentry_sdk.init(settings.SENTRY_DSN, traces_sample_rate=1.0)
 SOURCE_URL = "https://www.sahibinden.com/en/bicycles?address_town=655&address_city=48"
 
 
-async def send_message(bot: AsyncTeleBot, product: Product):
+async def send_message(bot: Bot, product: Product):
     await bot.send_photo(
         chat_id=settings.TELEGRAM_CHANNEL_ID,
         photo=product.image,
@@ -28,17 +28,16 @@ async def _handler(event: Optional[Dict], context: Optional[Dict]):
     products = await sahibinden_client.get_products(SOURCE_URL)
     logging.info(f"Sahibinden products: {[p.id for p in products]}")
 
-    bot = AsyncTeleBot(settings.TELEGRAM_BOT_TOKEN, parse_mode=None)
-    published_product_ids = []
+    bot = Bot(token=settings.TELEGRAM_BOT_TOKEN)
+    published_products = []
     async with ObjectStorageAdapter(settings.AWS_BUCKET_NAME) as adapter:
-        async for product in adapter.determine_new_products(products):
+        async for product in adapter.determine_new_items(products):
             await send_message(bot, product)
-            published_product_ids.append(product.id)
+            published_products.append(product)
             await asyncio.sleep(1)
-        if published_product_ids:
-            logging.info(f"Published sahibinden products: {published_product_ids}")
-            await adapter.set_products_published(published_product_ids)
-        await bot.close()
+        if published_products:
+            logging.info(f"Published sahibinden products: {[p.id for p in published_products]}")
+            await adapter.set_published_items(published_products)
 
 
 def handler(event: Optional[Dict], context: Optional[Dict]):

@@ -1,10 +1,4 @@
-from typing import List
-
 from pydantic import BaseModel
-
-
-class SahibindenMeta(BaseModel):
-    published_ids: List[int]
 
 
 class Product(BaseModel):
