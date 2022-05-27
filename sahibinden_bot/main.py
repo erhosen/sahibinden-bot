@@ -9,7 +9,7 @@ from object_storage_adapter import ObjectStorageAdapter
 from sahibinden import sahibinden_client
 from settings import settings
 
-logging.basicConfig(level=logging.INFO)
+logging.getLogger().setLevel(logging.DEBUG)
 sentry_sdk.init(settings.SENTRY_DSN, traces_sample_rate=1.0)
 
 SOURCE_URL = "https://www.sahibinden.com/en/bicycles?address_town=655&address_city=48"
@@ -32,6 +32,7 @@ async def _handler(event: Optional[Dict], context: Optional[Dict]):
     published_products = []
     async with ObjectStorageAdapter(settings.AWS_BUCKET_NAME) as adapter:
         async for product in adapter.determine_new_items(products):
+            logging.info(f"New product: {product.id}, {product.image}")
             await send_message(bot, product)
             published_products.append(product)
             await asyncio.sleep(1)

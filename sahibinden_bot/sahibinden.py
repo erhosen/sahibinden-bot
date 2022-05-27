@@ -55,7 +55,7 @@ class SahibindenClient:
                 # Get product location
                 item_location = result_item.find("td", {"class": "searchResultsLocationValue"}).get_text(
                     " ", strip=True
-                )  # noqa
+                )
                 # Create product object
                 product = Product(
                     id=item_id,
