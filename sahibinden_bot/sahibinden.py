@@ -35,11 +35,13 @@ class SahibindenClient:
     async def get_products(self, list_url: str) -> list[Product]:
         response = await self._make_request(list_url)
         soup = BeautifulSoup(response.content, "html.parser")
-        results_items = soup.findAll("tr", {"class": "searchResultsItem"})
+        results_items = soup.find_all("tr", {"class": "searchResultsItem"})
 
         product_list = []
         for result_item in results_items:
             try:
+                if len(result_item.attrs["class"]) > 1:  # searchResultsPromoSuper and other ads
+                    continue
                 # Get product id
                 item_id = int(result_item["data-id"])
                 # Get product url
