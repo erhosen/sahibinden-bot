@@ -5,7 +5,7 @@ from typing import Dict, Optional
 import sentry_sdk
 from aiogram import Bot
 from core import Product
-from object_storage_adapter import ObjectStorageAdapter
+from s3_objects_tracker import S3ObjectsTracker
 from sahibinden import sahibinden_client
 from settings import settings
 
@@ -26,19 +26,15 @@ async def send_message(bot: Bot, product: Product):
 
 async def _handler(event: Optional[Dict], context: Optional[Dict]):
     products = await sahibinden_client.get_products(SOURCE_URL)
-    logging.info(f"Sahibinden products: {[p.id for p in products]}")
+    logging.info(f"Found products: {[p.id for p in products]}")
 
     bot = Bot(token=settings.TELEGRAM_BOT_TOKEN)
-    published_products = []
-    async with ObjectStorageAdapter(settings.AWS_BUCKET_NAME) as adapter:
-        async for product in adapter.determine_new_items(products):
-            logging.info(f"New product: {product.id}, {product.image}")
+    async with S3ObjectsTracker(**settings.s3_credentials) as tracker:
+        for product in tracker.determine_new(products):
             await send_message(bot, product)
-            published_products.append(product)
+            await tracker.publish(product)
+            logging.info(f"Published new product: {product}")
             await asyncio.sleep(1)
-        if published_products:
-            logging.info(f"Published sahibinden products: {[p.id for p in published_products]}")
-            await adapter.set_published_items(published_products)
 
 
 def handler(event: Optional[Dict], context: Optional[Dict]):

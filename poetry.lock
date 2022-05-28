@@ -436,6 +436,17 @@ idna = {version = "*", optional = true, markers = "extra == \"idna2008\""}
 idna2008 = ["idna"]
 
 [[package]]
+name = "s3-objects-tracker"
+version = "0.3.0"
+description = "Track already processed objects inside your s3 bucket."
+category = "main"
+optional = false
+python-versions = ">=3.9,<4.0"
+
+[package.dependencies]
+aiobotocore = ">=2.3.2,<3.0.0"
+
+[[package]]
 name = "sentry-sdk"
 version = "1.5.12"
 description = "Python client for Sentry (https://sentry.io)"
@@ -567,7 +578,7 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.10"
-content-hash = "a94d0f7b66993ab3e43867e5deaefcfd9c63e2a073dc060a37d82a6c0252f194"
+content-hash = "71a31366dad6c243d180ba8d80e089f33832d7c47be04704d8b33134b437452c"
 
 [metadata.files]
 aiobotocore = [
@@ -959,6 +970,10 @@ pyyaml = [
 rfc3986 = [
     {file = "rfc3986-1.5.0-py2.py3-none-any.whl", hash = "sha256:a86d6e1f5b1dc238b218b012df0aa79409667bb209e58da56d0b94704e712a97"},
     {file = "rfc3986-1.5.0.tar.gz", hash = "sha256:270aaf10d87d0d4e095063c65bf3ddbc6ee3d0b226328ce21e036f946e421835"},
+]
+s3-objects-tracker = [
+    {file = "s3-objects-tracker-0.3.0.tar.gz", hash = "sha256:4a5555476dc071eb5fb4c34b8dfc8943c9fec98ec83783e6fcbfd264df377469"},
+    {file = "s3_objects_tracker-0.3.0-py3-none-any.whl", hash = "sha256:119641dad88186f9a825d62f102cc74c0e4978b2322fa361ce275874f9e9e3d1"},
 ]
 sentry-sdk = [
     {file = "sentry-sdk-1.5.12.tar.gz", hash = "sha256:259535ba66933eacf85ab46524188c84dcb4c39f40348455ce15e2c0aca68863"},

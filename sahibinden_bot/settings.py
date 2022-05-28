@@ -11,6 +11,7 @@ class Settings(BaseSettings):
     AWS_ACCESS_KEY_ID: str
     AWS_SECRET_ACCESS_KEY: str
     AWS_BUCKET_NAME: str
+    AWS_ENDPOINT_URL: str
 
     TELEGRAM_BOT_TOKEN: str
     TELEGRAM_CHANNEL_ID: int
@@ -23,6 +24,15 @@ class Settings(BaseSettings):
         random.shuffle(shuffled_proxies)
         for proxy in shuffled_proxies:
             yield {"http://": proxy, "https://": proxy}
+
+    @property
+    def s3_credentials(self) -> dict:
+        return {
+            "bucket_name": self.AWS_BUCKET_NAME,
+            "endpoint_url": self.AWS_ENDPOINT_URL,
+            "aws_access_key_id": self.AWS_ACCESS_KEY_ID,
+            "aws_secret_access_key": self.AWS_SECRET_ACCESS_KEY,
+        }
 
     class Config:
         env_file = ".env"
