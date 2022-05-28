@@ -2,7 +2,12 @@
 
 <img align="left" width="200" src="https://github.com/ErhoSen/sahibinden-bot/raw/master/img/demo.png">
 
-Bot that tracks new ads at sahibinden.com and notifies telegram channel
+Bot that tracks new ads at sahibinden.com and notifies telegram channel.
+
+It can be used for tracking new ads for any provided url of search page.
+For example, if you want to be notified about new ads in "Computers > Laptops & Notebooks" in the Izmir city:
+
+https://www.sahibinden.com/en/computers-laptops-notebooks?address_city=35
 
 ## Uses
 * [httpx](https://www.python-httpx.org/) to make http requests
