@@ -1,5 +1,5 @@
 import random
-from typing import Iterable, List
+from typing import Iterable
 
 from pydantic import BaseSettings
 
@@ -7,7 +7,9 @@ from pydantic import BaseSettings
 class Settings(BaseSettings):
     SAHIBINDEN_SOURCE_URL: str
     SAHIBINDEN_TIMEOUT: int = 10
-    PROXIES: List[str]
+
+    PROXY_URL: str
+    PROXY_URL_BACKUP: str
 
     AWS_ACCESS_KEY_ID: str
     AWS_SECRET_ACCESS_KEY: str
@@ -21,7 +23,7 @@ class Settings(BaseSettings):
 
     @property
     def httpx_proxies(self) -> Iterable[dict]:
-        shuffled_proxies = list(self.PROXIES)
+        shuffled_proxies = [self.PROXY_URL, self.PROXY_URL_BACKUP]
         random.shuffle(shuffled_proxies)
         for proxy in shuffled_proxies:
             yield {"http://": proxy, "https://": proxy}
