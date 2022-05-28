@@ -9,7 +9,7 @@ For example, if you want to be notified about new ads in "Computers > Laptops & 
 
 https://www.sahibinden.com/en/computers-laptops-notebooks?address_city=35
 
-## Uses
+### Uses
 * [httpx](https://www.python-httpx.org/) to make http requests
 * [BeautifulSoup](https://www.crummy.com/software/BeautifulSoup/) to parse html
 * [pydantic](https://pydantic-docs.helpmanual.io/) to type objects
@@ -30,7 +30,8 @@ $ python3 main.py
 
 ## Configuration
 
-**Sahibinden-bot** can be configured using environment variables.
+**Sahibinden-bot** should be configured using environment variables.
+
 The optimal way is to create an `.env` file in the root `sahibinden_bot` directory.
 
 ```bash
@@ -45,16 +46,12 @@ AWS_BUCKET_NAME='aws_bucket_name'
 AWS_ENDPOINT_URL='https://s3.amazonaws.com'
 ```
 
-**SAHIBINDEN_SOURCE_URL**: The URL of the search results page to scrape.
-
-### Optional integration with Sentry.
-
+### Optional integration with Sentry
 ```bash
 SENTRY_DSN='sentry_dsn'
 ```
 
-### Optionally uses a proxy.
-
+### Optionally uses a proxy
 ```bash
 PROXY_URL='http://user:pass@ip:port'
 PROXY_URL_BACKUP='http://user:pass@ip:port'
