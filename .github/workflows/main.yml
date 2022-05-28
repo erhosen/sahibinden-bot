@@ -1,0 +1,43 @@
+name: Build
+on: push
+
+jobs:
+  lint:
+    name: lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - name: Set up Python 3.9
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.9
+      - name: Linting
+        run: |
+          pip install poetry pre-commit
+          pre-commit run --all-files
+  deploy:
+    name: deploy
+    needs: lint
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/master'
+    steps:
+      - uses: actions/checkout@master
+      - uses: goodsmileduck/yandex-serverless-action@v1
+        with:
+          token: ${{ secrets.YC_TOKEN }}
+          function_id: ${{ secrets.YC_FUNCTION_ID }}
+          runtime: 'python39'
+          memory: '128'
+          execution_timeout: "25"
+          entrypoint: 'main.handler'
+          environment: "\
+            SAHIBINDEN_SOURCE_URL=${{ secrets.SAHIBINDEN_SOURCE_URL }},\
+            TELEGRAM_BOT_TOKEN=${{ secrets.TELEGRAM_BOT_TOKEN }},\
+            TELEGRAM_CHANNEL_ID=${{ secrets.TELEGRAM_CHANNEL_ID }},\
+            AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }},\
+            AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }},\
+            AWS_BUCKET_NAME=${{ secrets.AWS_BUCKET_NAME }},\
+            AWS_ENDPOINT_URL=${{ secrets.AWS_ENDPOINT_URL }},\
+            SENTRY_DSN=${{ secrets.SENTRY_DSN }},\
+            PROXIES=${{ secrets.PROXIES }}"
+          source: 'sahibinden_bot'
