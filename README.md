@@ -1,6 +1,6 @@
 # sahibinden-bot
 
-<img align="left" src="img/demo.jpg">
+<img align="left" src="img/demo.png">
 
 Bot that tracks new ads at sahibinden.com and notifies telegram channel
 
