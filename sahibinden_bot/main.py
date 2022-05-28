@@ -12,8 +12,6 @@ from settings import settings
 logging.getLogger().setLevel(logging.DEBUG)
 sentry_sdk.init(settings.SENTRY_DSN, traces_sample_rate=1.0)
 
-SOURCE_URL = "https://www.sahibinden.com/en/bicycles?address_town=655&address_city=48"
-
 
 async def send_message(bot: Bot, product: Product):
     await bot.send_photo(
@@ -25,7 +23,7 @@ async def send_message(bot: Bot, product: Product):
 
 
 async def _handler(event: Optional[Dict], context: Optional[Dict]):
-    products = await sahibinden_client.get_products(SOURCE_URL)
+    products = await sahibinden_client.get_products(settings.SAHIBINDEN_SOURCE_URL)
     logging.info(f"Found products: {[p.id for p in products]}")
 
     bot = Bot(token=settings.TELEGRAM_BOT_TOKEN)

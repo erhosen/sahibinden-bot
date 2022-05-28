@@ -5,6 +5,7 @@ from pydantic import BaseSettings
 
 
 class Settings(BaseSettings):
+    SAHIBINDEN_SOURCE_URL: str
     SAHIBINDEN_TIMEOUT: int = 10
     PROXIES: List[str]
 
